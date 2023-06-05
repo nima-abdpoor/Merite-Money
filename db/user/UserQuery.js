@@ -6,7 +6,8 @@ async function createUser(_user) {
             username: _user.username,
             password: _user.password,
             role: _user.role,
-            assignedCoins: _user.assignedCoins
+            assignedCoins: _user.assignedCoins,
+            receivedCoins: _user.receivedCoins
         });
         return {body: {success: true}, statusCode: 200};
     } catch (error) {

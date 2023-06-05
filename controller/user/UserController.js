@@ -44,7 +44,8 @@ async function PostUser(router) {
                                     username: context.request.body.user.username,
                                     password: context.request.body.user.password,
                                     role: [_role],
-                                    assignedCoins: config.body[0].assignedCoins
+                                    assignedCoins: config.body[0].assignedCoins,
+                                    receivedCoins: 0
                                 })
                                 context.body = creationUserResult.body
                                 return context.status = creationUserResult.statusCode
@@ -61,7 +62,8 @@ async function PostUser(router) {
                                 username: context.request.body.user.username,
                                 password: context.request.body.user.password,
                                 role: [_role],
-                                assignedCoins: config.body[0].assignedCoins
+                                assignedCoins: config.body[0].assignedCoins,
+                                receivedCoins: 0
                             })
                             context.body = creationUserResult.body
                             context.status = creationUserResult.statusCode
