@@ -36,10 +36,38 @@ async function updateUserRole(username, roles) {
     }
 }
 
+async function updateUserAssignedCoins(username, assignedCoins) {
+    try {
+        await user.updateOne(
+            {username: username}, {$inc: {assignedCoins: assignedCoins}}
+        );
+        return {success: true, statusCode: 200};
+    } catch (error) {
+        console.error("UserQuery.js/updateUserAssignedCoins: " + error.name + error.code + "error:", error);
+        return {body: {error: error.message}, success: false, statusCode: 500};
+    }
+}
+
+async function updateUserReceivedCoins(username, receivedCoins) {
+    try {
+        await user.updateOne(
+            {username: username}, {$inc: {receivedCoins: receivedCoins}}
+        );
+        return {success: true, statusCode: 200};
+    } catch (error) {
+        if (error.code === 11000) {
+            return {body: {error: "User already exists. try another UserName."}, statusCode: 401, success: false}
+        } else {
+            console.error("UserQuery.js/updateUserReceivedCoins: " + error.name + error.code + "error:", error);
+            return {body: {error: error.message}, success: false, statusCode: 500};
+        }
+    }
+}
+
 async function getUsers() {
     try {
         let query = {role: {"$in": ["User"]}}
-        let result = await user.find(query, {"username":1, "_id":0})
+        let result = await user.find(query, {"username": 1, "_id": 0})
         return {success: true, statusCode: 200, body: result}
     } catch (error) {
         console.error("UserQuery.js/ getUsers" + error.name + error.code + "error:", error);
@@ -50,5 +78,7 @@ async function getUsers() {
 module.exports = {
     createUser,
     updateUserRole,
-    getUsers
+    getUsers,
+    updateUserReceivedCoins,
+    updateUserAssignedCoins
 }

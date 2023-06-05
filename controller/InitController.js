@@ -6,7 +6,7 @@ async function startController(router) {
     await PostUser(router)
     await GetUsers(router)
     await initConfigController(router)
-    // initTransactionController(router)
+    await initTransactionController(router)
 }
 
 module.exports = startController

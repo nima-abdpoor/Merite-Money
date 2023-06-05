@@ -7,8 +7,8 @@ const transactionSchema = new Schema({
     amount: Number,
     date: Date,
     description: String,
-    fromId: {type: mongoose.Schema.Types.ObjectId, ref: "user"},
-    toId: {type: mongoose.Schema.Types.ObjectId, ref: "user"}
+    fromId: String,
+    toId: String
 })
 
 const Transaction = mongoose.model("transaction", transactionSchema)

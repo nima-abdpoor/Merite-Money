@@ -1,5 +1,4 @@
 const config = require("../../model/Config")
-const {body} = require("koa/lib/response");
 
 async function createConfig(_config) {
     try {

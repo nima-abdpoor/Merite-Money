@@ -7,5 +7,5 @@ main()
 function main(){
     initDB()
     server.startServer()
-    controller(server.router)
+    controller(server.router).then()
 }
