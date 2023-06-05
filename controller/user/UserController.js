@@ -1,7 +1,8 @@
 const user = require("../../model/User")
-const {createUser, updateUserRole} = require("../../db/user/UserQuery")
+const {createUser, updateUserRole, getUsers} = require("../../db/user/UserQuery")
 const isPasswordMatches = require("../util/PasswordDecryption")
 const {getConfig} = require("../../db/config/ConfigQuery");
+const getUser = require("../CheckExistingUser");
 
 async function PostUser(router) {
     router.post("/:userId/user", async (context, next) => {
@@ -39,7 +40,7 @@ async function PostUser(router) {
                             return context.status = 403
                         } else {
                             if (_role === "Admin" || _role === "User") {
-                                let config = await getUser()
+                                let config = await getAssignedCoinsFromConfig()
                                 let creationUserResult = await createUser({
                                     username: context.request.body.user.username,
                                     password: context.request.body.user.password,
@@ -57,7 +58,7 @@ async function PostUser(router) {
                     }
                     if (requester[0].role.includes("Admin")) {
                         if (_role === "User") {
-                            let config = await getUser()
+                            let config = await getAssignedCoinsFromConfig()
                             let creationUserResult = await createUser({
                                 username: context.request.body.user.username,
                                 password: context.request.body.user.password,
@@ -105,10 +106,37 @@ async function PostUser(router) {
     })
 }
 
-async function getUser() {
+async function getAssignedCoinsFromConfig() {
     let config = await getConfig().then()
     if (!config.success) console.log("error In getting config: " + config.body.error)
     return config
 }
 
-module.exports = PostUser
+async function GetUsers(router) {
+    router.get("/:userId/users", async (context, next) => {
+        try {
+            let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
+            if (!getUserResult.success) {
+                context.body = getUserResult.body
+                return context.status = getUserResult.status
+            } else {
+                let getAllUsersResult = await getUsers()
+                if (!getAllUsersResult.success) {
+                    context.body = getAllUsersResult.body.error
+                    return context.status = getAllUsersResult.statusCode
+                } else {
+                    return context.body = getAllUsersResult.body.filter((item) => item.username !== context.params.userId);
+                }
+            }
+        } catch (error) {
+            console.log("Error In UserController/GetUsers:", error)
+            context.status = 500
+            context.body = error
+        }
+    })
+}
+
+module.exports = {
+    PostUser,
+    GetUsers
+}

@@ -4,7 +4,7 @@ const {has} = require("koa/lib/response");
 
 async function getUser(userId, password) {
     const requester = await user.find({username: userId})
-    if (!"username" in requester) {
+    if (!"username" in requester || requester.length === 0) {
         return {body: "User Not Found", status: 404, success: false}
     }
     isPasswordMatches(password, requester[0].password, (error, isMatch) => {

@@ -1,10 +1,11 @@
 const initTransactionController = require("./transaction/TransactionController")
-const initUserController = require("./user/UserController")
+const {PostUser, GetUsers} = require("./user/UserController")
 const initConfigController = require("./config/ConfigController")
 
-function startController(router){
-    initUserController(router)
-    initConfigController(router)
+async function startController(router) {
+    await PostUser(router)
+    await GetUsers(router)
+    await initConfigController(router)
     // initTransactionController(router)
 }
 
