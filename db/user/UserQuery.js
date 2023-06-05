@@ -5,7 +5,8 @@ async function createUser(_user) {
         await user.create({
             username: _user.username,
             password: _user.password,
-            role: _user.role
+            role: _user.role,
+            assignedCoins: _user.assignedCoins
         });
         return {body: {success: true}, statusCode: 200};
     } catch (error) {

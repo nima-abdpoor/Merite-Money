@@ -1,12 +1,9 @@
-const koa = require("koa")
-const KoaRouter = require("koa-router")
-const parser = require("koa-bodyparser")
 const user = require("../../model/User")
-const {_explicitStatus} = require("koa/lib/response");
 const {createUser, updateUserRole} = require("../../db/user/UserQuery")
 const isPasswordMatches = require("../util/PasswordDecryption")
+const {getConfig} = require("../../db/config/ConfigQuery");
 
-async function init(router) {
+async function PostUser(router) {
     router.post("/:userId/user", async (context, next) => {
         try {
             const requester = await user.find({username: context.params.userId})
@@ -42,10 +39,12 @@ async function init(router) {
                             return context.status = 403
                         } else {
                             if (_role === "Admin" || _role === "User") {
+                                let config = await getUser()
                                 let creationUserResult = await createUser({
                                     username: context.request.body.user.username,
                                     password: context.request.body.user.password,
                                     role: [_role],
+                                    assignedCoins: config.body[0].assignedCoins
                                 })
                                 context.body = creationUserResult.body
                                 return context.status = creationUserResult.statusCode
@@ -57,10 +56,12 @@ async function init(router) {
                     }
                     if (requester[0].role.includes("Admin")) {
                         if (_role === "User") {
+                            let config = await getUser()
                             let creationUserResult = await createUser({
                                 username: context.request.body.user.username,
                                 password: context.request.body.user.password,
                                 role: [_role],
+                                assignedCoins: config.body[0].assignedCoins
                             })
                             context.body = creationUserResult.body
                             context.status = creationUserResult.statusCode
@@ -102,4 +103,10 @@ async function init(router) {
     })
 }
 
-module.exports = init
+async function getUser() {
+    let config = await getConfig().then()
+    if (!config.success) console.log("error In getting config: " + config.body.error)
+    return config
+}
+
+module.exports = PostUser
