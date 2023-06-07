@@ -46,13 +46,13 @@
         }
 
         .form-container {
-            margin-top: 20px;
+            margin-top: 10px;
             border: 1px solid #ccc;
-            padding: 20px;
+            padding: 10px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .form-label {
@@ -63,7 +63,7 @@
 
         .form-select {
             width: 100%;
-            padding: 10px;
+            padding: 5px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -98,30 +98,30 @@
         <div class="box">
             <div class="box-title">Wallet Coins: {{ walletCoins }}</div>
         </div>
-
-        <label id="element" class="form-label" style="display: none;">{{ selection }}</label>
-
-        <div class="form-container">
-            <form>
-                <div class="form-group">
-                    <label for="selection" class="form-label">Select an option:</label>
-                    <select id="selection" class="form-select">
-                        <option>Choose...</option>
-                        <script>
-                            var myArray = document.getElementById('element').innerHTML.split(",");
-                            var selectElement = document.getElementById("selection");
-                            myArray.forEach(function(user) {
-                                var option = document.createElement("option");
-                                option.text = user;
-                                selectElement.add(option);
-                            });
-                        </script>
-                    </select>
-                </div>
-                <input type="submit" value="Transfer" class="form-submit">
-            </form>
-        </div>
     </div>
+
 </div>
+
+<div class="form-container">
+    <form>
+        <div class="form-group">
+            <label for="selection" class="form-label">Select an option:</label>
+            <select id="selection" class="form-select">
+                <option>Choose...</option>
+                <script>
+                    var myArray = document.getElementById('element').innerHTML.split(",");
+                    var selectElement = document.getElementById("selection");
+                    myArray.forEach(function(user) {
+                        var option = document.createElement("option");
+                        option.text = user;
+                        selectElement.add(option);
+                    });
+                </script>
+            </select>
+        </div>
+        <input type="submit" value="Transfer" class="form-submit">
+    </form>
+</div>
+
 </body>
 </html>
