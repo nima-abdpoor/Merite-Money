@@ -1,5 +1,5 @@
-const user = require("../model/User");
-const isPasswordMatches = require("./util/PasswordDecryption");
+const user = require("../../model/User");
+const isPasswordMatches = require("./PasswordDecryption");
 const {has} = require("koa/lib/response");
 
 async function getUser(userId, password) {

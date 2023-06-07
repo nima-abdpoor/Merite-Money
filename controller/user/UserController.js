@@ -2,7 +2,7 @@ const user = require("../../model/User")
 const {createUser, updateUserRole, getUsers} = require("../../db/user/UserQuery")
 const isPasswordMatches = require("../util/PasswordDecryption")
 const {getConfig} = require("../../db/config/ConfigQuery");
-const getUser = require("../CheckExistingUser");
+const getUser = require("../util/CheckExistingUser");
 
 async function PostUser(router) {
     router.post("/:userId/user", async (context, next) => {

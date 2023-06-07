@@ -12,6 +12,7 @@
   "dependencies": {
     "@jest/globals": "^29.5.0",
     "bcryptjs": "^2.4.3",
+    "co-views": "^2.1.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
@@ -20,11 +21,14 @@
     "koa-html-render": "^1.0.3",
     "koa-pug": "^5.1.0",
     "koa-router": "^12.0.0",
+    "koa-views": "^8.0.0",
     "mongodb": "^5.5.0",
     "mongoose": "^7.1.1",
     "mongoose-sequence": "^5.3.1",
     "mongoose-unique-validator": "^4.0.0",
+    "nunjucks": "^3.2.4",
     "paseto": "^3.1.4",
+    "swig": "^1.4.2",
     "test": "^3.3.0"
   },
   "devDependencies": {

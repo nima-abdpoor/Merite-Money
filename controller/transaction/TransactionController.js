@@ -1,4 +1,4 @@
-const getUser = require("../CheckExistingUser");
+const getUser = require("../util/CheckExistingUser");
 const {updateUserReceivedCoins, updateUserAssignedCoins} = require("../../db/user/UserQuery");
 const user = require("../../model/User");
 const transferQuery = require("../../db/transaction/TransactionQuery");

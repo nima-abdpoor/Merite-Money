@@ -1,5 +1,9 @@
-const getUser = require("./CheckExistingUser");
+const getUser = require("../util/CheckExistingUser");
 const jwt = require('jsonwebtoken');
+const { createReadStream } =  require("fs");
+
+const views = require("co-views");
+const render = views("views", { map: { html: 'swig' }})
 
 async function LoginController(router) {
     router.post("/login", async (context, next) => {
@@ -16,8 +20,7 @@ async function LoginController(router) {
                 context.cookies.set("access_token", accessToken, {
                     httpOnly: true,
                 })
-                    return context.body = {success: true, token: accessToken}
-                    .status = 200
+                return context.redirect("/" + context.request.body.username + "/dashboard")
             }
         } catch (error) {
             console.log("Error In LoginController:", error)
@@ -29,7 +32,7 @@ async function LoginController(router) {
 
 async function GetLogin(router) {
     router.get("/login", async (context, next) => {
-        await context.render("login")
+        context.body = await render("login");
     })
 }
 

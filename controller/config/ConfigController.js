@@ -1,4 +1,4 @@
-const getUser = require("../CheckExistingUser")
+const getUser = require("../util/CheckExistingUser")
 const {createConfig} = require("../../db/config/ConfigQuery");
 
 async function PostConfig(router) {
