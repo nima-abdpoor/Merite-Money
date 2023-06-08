@@ -88,6 +88,7 @@
 <div class="dashboard">
     <div class="dashboard-left">
         <div class="box">
+            <div id="errorElement" style="display: none; color: red;"></div>
             <div class="box-title">Username: {{username}}</div>
         </div>
 
@@ -98,6 +99,8 @@
         <div class="box">
             <div class="box-title">Wallet Coins: {{ walletCoins }}</div>
         </div>
+        <label id="element" class="form-label" style="display: none;">{{ selection }}</label>
+        <label id="username" class="form-label" style="display: none;">{{ username }}</label>
     </div>
 
 </div>
@@ -105,6 +108,9 @@
 <div class="form-container">
     <form>
         <div class="form-group">
+            <div class="box-title">
+                <div class="box-title">Transfer Money</div>
+            </div>
             <label for="selection" class="form-label">Select an option:</label>
             <select id="selection" class="form-select">
                 <option>Choose...</option>
@@ -119,7 +125,43 @@
                 </script>
             </select>
         </div>
-        <input type="submit" value="Transfer" class="form-submit">
+        <input id="transferBtn" type="submit" value="Transfer" class="form-submit">
+        <script>
+            const transferBtn = document.getElementById('transferBtn');
+
+            // Add onclick listener
+            transferBtn.addEventListener('click', function(event) {
+                var selectElement = document.getElementById("selection");
+                var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+                event.preventDefault();
+                if (selectedOption === "Choose...") {
+                    return alert("Please Select One...");
+                }
+                // Prevent the default form submission behavior
+                const userId = document.getElementById("username").innerHTML;
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `/${userId}/transfer`, true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                const requestBody = {
+                    transfer: {
+                        amount: 2,
+                        description: "from html",
+                        destination: selectedOption
+                    }
+                };
+                xhr.send(JSON.stringify(requestBody));
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+
+                    } else {
+                        const errorResponse = JSON.parse(xhr.responseText);
+                        const errorMessage = errorResponse.error
+                        alert(errorMessage);
+                    }
+                }
+            })
+
+        </script>
     </form>
 </div>
 
