@@ -14,6 +14,11 @@ async function GetDashboard(router) {
                 let token = context.cookies.get("access_token")
                 try {
                     const data = jwt.verify(token, "SecretKey");
+                    if (data.username !== context.params.userId){
+                        context.redirect("/login")
+                        return context.body = {error: "Access Denied!"}
+                            .status = 403
+                    }
                     let getAllUsersResult = await getUsers()
                     let allUsernames = ""
                     getAllUsersResult.body.forEach(function(user) {

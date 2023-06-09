@@ -7,16 +7,14 @@ async function getUser(userId, password) {
     if (!"username" in requester || requester.length === 0) {
         return {body: "User Not Found", status: 404, success: false}
     }
-    isPasswordMatches(password, requester[0].password, (error, isMatch) => {
-        if (error) {
-            return {body: "Error Accrued!" + error, status: 500, success: false}
-        } else {
-            if (!isMatch) {
-                return {body: "Incorrect Password!", status: 401, success: false}
-            }
-        }
-    });
-    return {success: true, body: requester}
+    let response = undefined
+    let result = await isPasswordMatches(password, requester[0].password)
+    if (result){
+        response = {success: true, body: requester}
+    }else {
+        response = {body: "Incorrect Password", status: 403, success: false}
+    }
+    return response
 }
 
 module.exports = getUser

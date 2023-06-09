@@ -125,14 +125,24 @@
                 </script>
             </select>
         </div>
+        <div class="form-group">
+            <label for="amount" class="form-label">Amount:</label>
+            <input type="number" id="amount" class="form-input" placeholder="Enter amount" min="1" required>
+        </div>
+        <div class="form-group">
+            <label for="description" class="form-label">Description:</label>
+            <textarea id="description" class="form-input" placeholder="Enter description" rows="3" required></textarea>
+        </div>
         <input id="transferBtn" type="submit" value="Transfer" class="form-submit">
         <script>
             const transferBtn = document.getElementById('transferBtn');
 
             // Add onclick listener
             transferBtn.addEventListener('click', function(event) {
-                var selectElement = document.getElementById("selection");
-                var selectedOption = selectElement.options[selectElement.selectedIndex].value;
+                const selectElement = document.getElementById("selection");
+                const selectedOption = selectElement.options[selectElement.selectedIndex].value;
+                const descriptionInput = document.getElementById("description").value;
+                const amountInput = parseInt(document.getElementById("amount").value);
                 event.preventDefault();
                 if (selectedOption === "Choose...") {
                     return alert("Please Select One...");
@@ -144,15 +154,15 @@
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 const requestBody = {
                     transfer: {
-                        amount: 2,
-                        description: "from html",
+                        amount: amountInput,
+                        description: descriptionInput,
                         destination: selectedOption
                     }
                 };
                 xhr.send(JSON.stringify(requestBody));
                 xhr.onload = function () {
                     if (xhr.status === 200) {
-
+                        location.reload();
                     } else {
                         const errorResponse = JSON.parse(xhr.responseText);
                         const errorMessage = errorResponse.error

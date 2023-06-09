@@ -1,14 +1,7 @@
 const bcrypt = require("bcryptjs")
 
-function isPasswordMatches(passwordEnteredByUser, hash, callback) {
-    bcrypt.compare(passwordEnteredByUser, hash, (error, isMatch) => {
-        if (error) {
-            console.log("PasswordDecryption: " + error);
-            callback(error, null);
-        } else {
-            callback(null, isMatch);
-        }
-    });
+async function isPasswordMatches(passwordEnteredByUser, hash) {
+    return bcrypt.compare(passwordEnteredByUser, hash)
 }
 
-module .exports = isPasswordMatches
+module.exports = isPasswordMatches

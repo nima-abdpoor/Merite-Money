@@ -8,7 +8,7 @@ const render = views("views", { map: { html: 'swig' }})
 async function LoginController(router) {
     router.post("/login", async (context, next) => {
         try {
-            let getUserResult = await getUser(context.request.body.username, context.request.body.password).then()
+            let getUserResult = await getUser(context.request.body.username, context.request.body.password)
             if (!getUserResult.success) {
                 context.body = getUserResult.body
                 return context.status = getUserResult.status

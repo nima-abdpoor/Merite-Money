@@ -16,8 +16,9 @@ async function transferMoney(router) {
                     return context.status = getUserResult.status
                 }
             } else {
-                getUserResult = await user.find({username: userId}).limit(1)
-                getUserResult.body = [getUserResult]
+                let result = await user.find({username: userId})
+                getUserResult = {body: []}
+                getUserResult.body.push(result[0])
                 let token = context.cookies.get("access_token")
                 const data = jwt.verify(token, "SecretKey");
             }
