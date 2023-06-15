@@ -80,6 +80,23 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .transaction-history {
+            max-height: 200px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .transaction-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -101,8 +118,18 @@
         </div>
         <label id="element" class="form-label" style="display: none;">{{ selection }}</label>
         <label id="username" class="form-label" style="display: none;">{{ username }}</label>
+        <label id="transAction" class="form-label" style="display: none;">{{ transactions }}</label>
     </div>
 
+</div>
+
+<div class="dashboard-right">
+    <div class="box">
+        <div class="box-title">Transaction History</div>
+        <div class="transaction-history" id="transactionHistory">
+
+        </div>
+    </div>
 </div>
 
 <div class="form-container">
@@ -136,6 +163,9 @@
         <input id="transferBtn" type="submit" value="Transfer" class="form-submit">
         <script>
             const transferBtn = document.getElementById('transferBtn');
+            const transAction = document.getElementById("transAction").textContent;
+            console.log(transAction)
+            addTransaction(transAction)
 
             // Add onclick listener
             transferBtn.addEventListener('click', function(event) {
@@ -170,6 +200,28 @@
                     }
                 }
             })
+
+            // JavaScript code for adding transaction items dynamically
+
+
+            // Function to add a new transaction item
+
+            function addTransaction(transactions) {
+                var transactionHistory = document.getElementById('transactionHistory');
+                var transactionItem = document.createElement('div');
+                transactionItem.className = 'transaction-item';
+
+                var amountElement = document.createElement('span');
+                amountElement.className = 'transaction-amount';
+                amountElement.innerText = transactions;
+
+                transactionItem.appendChild(amountElement);
+
+                transactionHistory.appendChild(transactionItem);
+            }
+
+            // Example usage: adding a new transaction item
+
 
         </script>
     </form>

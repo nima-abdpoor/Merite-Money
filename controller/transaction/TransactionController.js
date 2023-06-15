@@ -1,7 +1,7 @@
 const getUser = require("../util/CheckExistingUser");
 const {updateUserReceivedCoins, updateUserAssignedCoins} = require("../../db/user/UserQuery");
 const user = require("../../model/User");
-const transferQuery = require("../../db/transaction/TransactionQuery");
+const {transferQuery, getTransaction} = require("../../db/transaction/TransactionQuery");
 const jwt = require("jsonwebtoken");
 
 async function transferMoney(router) {
@@ -21,6 +21,11 @@ async function transferMoney(router) {
                 getUserResult.body.push(result[0])
                 let token = context.cookies.get("access_token")
                 const data = jwt.verify(token, "SecretKey");
+                if (data.username !== context.params.userId) {
+                    context.redirect("/login")
+                    return context.body = {error: "Access Denied!"}
+                        .status = 403
+                }
             }
             let amount = context.request.body.transfer.amount
             if (amount > 0) {
@@ -86,4 +91,47 @@ async function transferMoney(router) {
     })
 }
 
-module.exports = transferMoney
+async function getTransactions(router, _transaction) {
+    router.get("/:userId/transactions", async (context, next) => {
+        try {
+            let userId = context.params.userId
+            let getUserResult
+            if (context.request.body.password) {
+                getUserResult = await getUser(userId, context.request.body.password).then()
+                if (!getUserResult.success) {
+                    context.body = getUserResult.body
+                    return context.status = getUserResult.status
+                }
+            } else {
+                let token = context.cookies.get("access_token")
+                const data = jwt.verify(token, "SecretKey");
+                if (data.username !== context.params.userId) {
+                    context.redirect("/login")
+                    return context.body = {error: "Access Denied!"}
+                        .status = 403
+                }
+            }
+            let result = await getTransaction(_transaction)
+            if (!result.success){
+                return context.body = result.body
+                    .status = result.statusCode
+            }else {
+                return context.body = result.body
+                    .status = result.statusCode
+            }
+        } catch (error) {
+            if (error.message === "jwt must be provided") {
+                context.body = {error: "403: " + error.message}
+                return context.status = 403
+            }
+            console.log("Error In ConfigController:", error.message)
+            context.body = {error: error}
+            return context.status = 500
+        }
+    })
+}
+
+module.exports = {
+    transferMoney,
+    getTransactions
+}

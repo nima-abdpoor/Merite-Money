@@ -16,9 +16,7 @@ async function LoginController(router) {
                 const tokenPayload = {
                     username: context.request.body.username,
                 };
-                const accessToken = jwt.sign(tokenPayload, "SecretKey", {
-                    expiresIn: "1d"
-                });
+                const accessToken = jwt.sign(tokenPayload, "SecretKey", {});
                 context.cookies.set("access_token", accessToken, {
                     httpOnly: true,
                 })

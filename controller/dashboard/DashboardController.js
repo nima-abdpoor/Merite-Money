@@ -1,7 +1,7 @@
-const getUser = require("../util/CheckExistingUser");
 const user = require("../../model/User");
 const jwt = require('jsonwebtoken');
 const {getUsers} = require("../../db/user/UserQuery");
+const {getTransaction} = require("../../db/transaction/TransactionQuery");
 
 async function GetDashboard(router) {
     router.get("/:userId/dashboard", async (context, next) => {
@@ -19,7 +19,13 @@ async function GetDashboard(router) {
                         return context.body = {error: "Access Denied!"}
                             .status = 403
                     }
+                    let transactions = {}
                     let getAllUsersResult = await getUsers()
+                    transactions.sourceTransactions = (await getTransaction({from: context.params.userId})).body
+                    transactions.destinationTransactions = (await getTransaction({to: context.params.userId})).body
+                    if (requester[0].role.includes("Admin" || "SuperAdmin")) {
+                        transactions.allTransactions = (await getTransaction({all: ""})).body
+                    }
                     let allUsernames = ""
                     getAllUsersResult.body.forEach(function(user) {
                         allUsernames += user.username + ","
@@ -27,10 +33,12 @@ async function GetDashboard(router) {
 
                     await context.render("dashboard",
                         {username: requester[0].username, receivedCoins: requester[0].receivedCoins, walletCoins: requester[0].assignedCoins,
-                        selection: allUsernames.slice(0, -1) }
+                        selection: allUsernames.slice(0, -1), transactions: preaparTransactionsForUI(transactions.destinationTransactions) }
                     );
                     return context.status = 200
-                } catch {
+                }
+                catch(error) {
+                    console.log(error)
                     context.redirect("/login")
                     return context.body = {error: "Invalid Token"}
                         .status = 403
@@ -42,6 +50,14 @@ async function GetDashboard(router) {
             return context.status = 500
         }
     })
+}
+
+function preaparTransactionsForUI(transactions){
+    let result = "";
+    for (let i = 0; i < transactions.length; i++) {
+        result = result + `${i}: ${transactions[i].fromId} sent you ${transactions[i].amount} at ${transactions[i].date} with description: ${transactions[i].description} \n`
+    }
+    return result
 }
 
 module.exports = GetDashboard
