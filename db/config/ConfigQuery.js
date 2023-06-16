@@ -3,7 +3,8 @@ const config = require("../../model/Config")
 async function createConfig(_config) {
     try {
         await config.create({
-            assignedCoins: _config.assignedCoins
+            assignedCoins: _config.assignedCoins,
+            team: _config.team
         });
         return {body: {success: true}, statusCode: 200};
     } catch (error) {
