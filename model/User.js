@@ -22,7 +22,8 @@ const userSchema = new Schema({
     receivedCoins: {
         type: Number,
         value: 0
-    }
+    },
+    team: String
 })
 userSchema.pre("save", function (next) {
     const user = this

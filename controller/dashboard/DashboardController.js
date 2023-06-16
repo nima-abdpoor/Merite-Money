@@ -87,7 +87,7 @@ function preaparTopUsersForUI(users){
     let result = "";
     console.log(users)
     for (let i = 0; i < users.length; i++) {
-        result = result + `${i}: ${users[i].username}:${users[i].receivedCoins} \n`
+        result = result + `${i}==> ${users[i].username}:${users[i].receivedCoins} \n`
     }
     console.log(result)
     return result

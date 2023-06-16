@@ -23,79 +23,86 @@ async function PostUser(router) {
                     }
                 }
             });
-            if (context.request.body.user.username === undefined &&
-                context.request.body.user.password === undefined &&
-                context.request.body.user.roles === undefined
+            if (context.request.body.user.username === undefined ||
+                context.request.body.user.password === undefined ||
+                context.request.body.user.role === undefined ||
+                context.request.body.user.team === undefined
             ) {
-                context.body = "define username, password and roles"
+                context.body = {error: "define username, password, roles and team"}
                 return context.status = 401
-            } else {
-                let _role = context.request.body.user.role
-                const _user = await user.find({username: context.request.body.user.username})
-                if (!_user[0] || !"username" in _user) {
-                    // user in body is not in database
-                    if (requester[0].role.includes("SuperAdmin")) {
-                        if (_role === "SuperAdmin") {
-                            context.body = "Not Allowed"
-                            return context.status = 403
-                        } else {
-                            if (_role === "Admin" || _role === "User") {
-                                let config = await getAssignedCoinsFromConfig()
-                                let creationUserResult = await createUser({
-                                    username: context.request.body.user.username,
-                                    password: context.request.body.user.password,
-                                    role: [_role],
-                                    assignedCoins: config.body[0].assignedCoins,
-                                    receivedCoins: 0
-                                })
-                                context.body = creationUserResult.body
-                                return context.status = creationUserResult.statusCode
-                            } else {
-                                context.body = {error: "Role Is Not Valid"}
-                                return context.status = 401
-                            }
-                        }
-                    }
-                    if (requester[0].role.includes("Admin")) {
-                        if (_role === "User") {
+            }
+            let team = context.request.body.user.team
+            if (!(team === "kilid" || team === "second")){
+                context.body = {error: "team should be defined correctly. we only have \'kilid\' and \'second\' teams currently"}
+                return context.status = 401
+            }
+            let _role = context.request.body.user.role
+            const _user = await user.find({username: context.request.body.user.username})
+            if (!_user[0] || !"username" in _user) {
+                // user in body is not in database
+                if (requester[0].role.includes("SuperAdmin")) {
+                    if (_role === "SuperAdmin") {
+                        context.body = "Not Allowed"
+                        return context.status = 403
+                    } else {
+                        if (_role === "Admin" || _role === "User") {
                             let config = await getAssignedCoinsFromConfig()
                             let creationUserResult = await createUser({
                                 username: context.request.body.user.username,
                                 password: context.request.body.user.password,
                                 role: [_role],
                                 assignedCoins: config.body[0].assignedCoins,
+                                team: context.request.body.user.team,
                                 receivedCoins: 0
                             })
                             context.body = creationUserResult.body
-                            context.status = creationUserResult.statusCode
+                            return context.status = creationUserResult.statusCode
+                        } else {
+                            context.body = {error: "Role Is Not Valid"}
+                            return context.status = 401
+                        }
+                    }
+                }
+                if (requester[0].role.includes("Admin")) {
+                    if (_role === "User") {
+                        let config = await getAssignedCoinsFromConfig()
+                        let creationUserResult = await createUser({
+                            username: context.request.body.user.username,
+                            password: context.request.body.user.password,
+                            role: [_role],
+                            assignedCoins: config.body[0].assignedCoins,
+                            team: context.request.body.user.team,
+                            receivedCoins: 0
+                        })
+                        context.body = creationUserResult.body
+                        context.status = creationUserResult.statusCode
+                    }
+                } else {
+                    context.body = {error: "Not Allowed."}
+                    return context.status = 403
+                }
+            } else {
+                // we have already the user in our database
+                if (!_user[0].role.includes("Admin") || !_user[0].role.includes("User")) {
+                    if (((_role === "User" || _role === "Admin") && requester[0].role.includes("SuperAdmin")) ||
+                        ((_role === "User") && requester[0].role.includes("Admin"))) {
+                        if (!_user[0].role.includes(_role)) {
+                            let roles = _user[0].role
+                            roles.push(_role)
+                            let updateUserResult = await updateUserRole(context.request.body.user.username, roles)
+                            context.body = updateUserResult.body
+                            context.status = updateUserResult.statusCode
+                        } else {
+                            context.body = {error: "User Already Has This Role!"}
+                            context.status = 401
                         }
                     } else {
                         context.body = {error: "Not Allowed."}
                         return context.status = 403
                     }
                 } else {
-                    // we have already the user in our database
-                    if (!_user[0].role.includes("Admin") || !_user[0].role.includes("User")) {
-                        if (((_role === "User" || _role === "Admin") && requester[0].role.includes("SuperAdmin")) ||
-                            ((_role === "User") && requester[0].role.includes("Admin"))) {
-                            if (!_user[0].role.includes(_role)) {
-                                let roles = _user[0].role
-                                roles.push(_role)
-                                let updateUserResult = await updateUserRole(context.request.body.user.username, roles)
-                                context.body = updateUserResult.body
-                                context.status = updateUserResult.statusCode
-                            } else {
-                                context.body = {error: "User Already Has This Role!"}
-                                context.status = 401
-                            }
-                        } else {
-                            context.body = {error: "Not Allowed."}
-                            return context.status = 403
-                        }
-                    } else {
-                        context.body = {error: "Not Allowed."}
-                        return context.status = 403
-                    }
+                    context.body = {error: "Not Allowed."}
+                    return context.status = 403
                 }
             }
         } catch (error) {

@@ -273,5 +273,33 @@
     </script>
 </div>
 
+<div class="dashboard-right">
+    <div class="transaction-history" id="top_users_panel">
+        <div class="box-title">Top Users</div>
+        <div class="transaction-history" id="top_users"></div>
+    </div>
+    <script>
+        const topUsers = document.getElementById("topUsers").textContent;
+        if (topUsers === "[object Object]"){
+            document.getElementById('top_users_panel').hidden = true
+        }
+        addTopUsersInfo(topUsers)
+
+        function addTopUsersInfo(users) {
+            var transactionHistory = document.getElementById('top_users');
+            var transactionItem = document.createElement('div');
+            transactionItem.className = 'transaction-item';
+
+            var amountElement = document.createElement('span');
+            amountElement.className = 'transaction-amount';
+            amountElement.innerText = users;
+
+            transactionItem.appendChild(amountElement);
+
+            transactionHistory.appendChild(transactionItem);
+        }
+    </script>
+</div>
+
 </body>
 </html>
