@@ -19,11 +19,16 @@ async function transferQuery(_transfer) {
 
 async function getTransaction(_transaction) {
     try {
+        const endDate = new Date();
+        endDate.setMonth(new Date().getMonth()  + 1, 1);
+        endDate.setHours(0, 0, 0, 0);
+
         if (_transaction.from) {
-            let result = await transaction.find({fromId: _transaction.from}, {"date": 1, "amount": 1, "description": 1,"toId": 1, "_id": 0})
+            // let dateQuery = { $month: new Date().toISOString().getMonth() + 1 }
+            let result = await transaction.find({fromId: _transaction.from, date:  {$lt: endDate} }, {"date": 1, "amount": 1, "description": 1,"toId": 1, "_id": 0})
             return {success: true, statusCode: 200, body: result}
         } else if (_transaction.to) {
-            let result = await transaction.find({toId: _transaction.to},  {"date": 1, "amount": 1, "description": 1,"fromId": 1, "_id": 0})
+            let result = await transaction.find({toId: _transaction.to, date:  {$lt: endDate}},  {"date": 1, "amount": 1, "description": 1,"fromId": 1, "_id": 0})
             return {success: true, statusCode: 200, body: result}
         }else if (_transaction.all){
             let result = await transaction.find({},  {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0})

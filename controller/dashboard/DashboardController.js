@@ -24,7 +24,7 @@ async function GetDashboard(router) {
                     transactions.sourceTransactions = (await getTransaction({from: context.params.userId})).body
                     transactions.destinationTransactions = (await getTransaction({to: context.params.userId})).body
                     if (requester[0].role.includes("Admin" || "SuperAdmin")) {
-                        transactions.allTransactions = (await getTransaction({all: ""})).body
+                        transactions.allTransactions = (await getTransaction({all: "0"})).body
                     }
                     let allUsernames = ""
                     getAllUsersResult.body.forEach(function(user) {
@@ -33,7 +33,9 @@ async function GetDashboard(router) {
 
                     await context.render("dashboard",
                         {username: requester[0].username, receivedCoins: requester[0].receivedCoins, walletCoins: requester[0].assignedCoins,
-                        selection: allUsernames.slice(0, -1), transactions: preaparTransactionsForUI(transactions.destinationTransactions) }
+                        selection: allUsernames.slice(0, -1), transferredMoney: preaparDestinationTransactionsForUI(transactions.destinationTransactions),
+                        myTransactions: preaparSourceTransactionsForUI(transactions.sourceTransactions), allTransActions: preaparAllTransactionsForUI(transactions.allTransactions)
+                        }
                     );
                     return context.status = 200
                 }
@@ -52,10 +54,26 @@ async function GetDashboard(router) {
     })
 }
 
-function preaparTransactionsForUI(transactions){
+function preaparDestinationTransactionsForUI(transactions){
     let result = "";
     for (let i = 0; i < transactions.length; i++) {
         result = result + `${i}: ${transactions[i].fromId} sent you ${transactions[i].amount} at ${transactions[i].date} with description: ${transactions[i].description} \n`
+    }
+    return result
+}
+
+function preaparSourceTransactionsForUI(transactions){
+    let result = "";
+    for (let i = 0; i < transactions.length; i++) {
+        result = result + `${i}: I Have sent ${transactions[i].amount} to ${transactions[i].toId} with description: ${transactions[i].description} \n`
+    }
+    return result
+}
+
+function preaparAllTransactionsForUI(transactions){
+    let result = "";
+    for (let i = 0; i < transactions.length; i++) {
+        result = result + `${i}: ${transactions[i].fromId} Has sent ${transactions[i].amount} to ${transactions[i].toId} with description: ${transactions[i].description} \n`
     }
     return result
 }
