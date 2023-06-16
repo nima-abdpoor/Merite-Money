@@ -125,6 +125,7 @@
         <label id="transAction" class="form-label" style="display: none;">{{ transferredMoney }}</label>
         <label id="myTransactions" class="form-label" style="display: none;">{{ myTransactions }}</label>
         <label id="allTransActions" class="form-label" style="display: none;">{{ allTransActions }}</label>
+        <label id="topUsers" class="form-label" style="display: none;">{{ topUsers }}</label>
     </div>
 
 </div>
@@ -239,23 +240,6 @@
 
                 transactionHistory.appendChild(transactionItem);
             }
-
-            function addAllTransactions(transactions) {
-                var transactionHistory = document.getElementById('allTransactionHistory');
-                var transactionItem = document.createElement('div');
-                transactionItem.className = 'transaction-item';
-
-                var amountElement = document.createElement('span');
-                amountElement.className = 'transaction-amount';
-                amountElement.innerText = transactions;
-
-                transactionItem.appendChild(amountElement);
-
-                transactionHistory.appendChild(transactionItem);
-            }
-
-            // Example usage: adding a new transaction item
-
 
         </script>
     </form>

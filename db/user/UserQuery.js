@@ -75,10 +75,22 @@ async function getUsers() {
     }
 }
 
+async function getUsersByReceivedCoins() {
+    try {
+        let query = {role: {"$in": ["User"]}}
+        let result = await user.find(query, {"username": 1, "receivedCoins": 1, "_id": 0}).sort({"receivedCoins": -1})
+        return {success: true, statusCode: 200, body: result}
+    } catch (error) {
+        console.error("UserQuery.js/ getUsersByReceivedCoins:" + error.name + error.code + "error:", error);
+        return {body: {error: error.message}, success: false, statusCode: 500};
+    }
+}
+
 module.exports = {
     createUser,
     updateUserRole,
     getUsers,
     updateUserReceivedCoins,
-    updateUserAssignedCoins
+    updateUserAssignedCoins,
+    getUsersByReceivedCoins
 }

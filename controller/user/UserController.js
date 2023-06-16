@@ -12,7 +12,7 @@ async function PostUser(router) {
                 context.body = "User Not Found"
                 return context.status = 404
             }
-            isPasswordMatches(context.request.body.password, requester[0].password, (error, isMatch) => {
+            await isPasswordMatches(context.request.body.password, requester[0].password, (error, isMatch) => {
                 if (error) {
                     context.body = "Error Accrued!" + error
                     return context.status = 500
