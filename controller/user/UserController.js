@@ -46,13 +46,14 @@ async function PostUser(router) {
                         return context.status = 403
                     } else {
                         if (_role === "Admin" || _role === "User") {
-                            let config = await getAssignedCoinsFromConfig()
+                            let team = context.request.body.user.team
+                            let config = await getAssignedCoinsFromConfig(team)
                             let creationUserResult = await createUser({
                                 username: context.request.body.user.username,
                                 password: context.request.body.user.password,
                                 role: [_role],
                                 assignedCoins: config.body[0].assignedCoins,
-                                team: context.request.body.user.team,
+                                team: team,
                                 receivedCoins: 0
                             })
                             context.body = creationUserResult.body
@@ -65,13 +66,14 @@ async function PostUser(router) {
                 }
                 if (requester[0].role.includes("Admin")) {
                     if (_role === "User") {
-                        let config = await getAssignedCoinsFromConfig()
+                        let team = context.request.body.user.team
+                        let config = await getAssignedCoinsFromConfig(team)
                         let creationUserResult = await createUser({
                             username: context.request.body.user.username,
                             password: context.request.body.user.password,
                             role: [_role],
                             assignedCoins: config.body[0].assignedCoins,
-                            team: context.request.body.user.team,
+                            team: team,
                             receivedCoins: 0
                         })
                         context.body = creationUserResult.body
@@ -113,8 +115,8 @@ async function PostUser(router) {
     })
 }
 
-async function getAssignedCoinsFromConfig() {
-    let config = await getConfig().then()
+async function getAssignedCoinsFromConfig(team) {
+    let config = await getConfig(team).then()
     if (!config.success) console.log("error In getting config: " + config.body.error)
     return config
 }

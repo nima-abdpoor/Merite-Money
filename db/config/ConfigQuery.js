@@ -13,9 +13,9 @@ async function createConfig(_config) {
     }
 }
 
-async function getConfig() {
+async function getConfig(team) {
     try {
-        let result = await config.find().limit(1).sort({$natural: -1})
+        let result = await config.find({team: team}).limit(1).sort({$natural: -1})
         return {body: result, statusCode: 200, success: true};
     } catch (error) {
         console.error("ConfigQuery.js" + error.name + error.code + "error:", error);
