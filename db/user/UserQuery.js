@@ -49,6 +49,18 @@ async function updateUserAssignedCoins(username, assignedCoins) {
     }
 }
 
+async function updateAllUsersAssignedCoins(team, assignedCoins) {
+    try {
+        await user.updateMany(
+            {team: team}, {$inc: {assignedCoins: assignedCoins}}
+        );
+        return {success: true, statusCode: 200, body: {"message": "successfully done!"}};
+    } catch (error) {
+        console.error("UserQuery.js/updateAllUsersAssignedCoins: " + error.name + error.code + "error:", error);
+        return {body: {error: error.message}, success: false, statusCode: 500};
+    }
+}
+
 async function updateUserReceivedCoins(username, receivedCoins) {
     try {
         await user.updateOne(
@@ -93,5 +105,6 @@ module.exports = {
     getUsers,
     updateUserReceivedCoins,
     updateUserAssignedCoins,
+    updateAllUsersAssignedCoins,
     getUsersByReceivedCoins
 }

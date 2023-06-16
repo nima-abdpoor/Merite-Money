@@ -1,5 +1,5 @@
 const user = require("../../model/User")
-const {createUser, updateUserRole, getUsers} = require("../../db/user/UserQuery")
+const {createUser, updateUserRole, getUsers, updateAllUsersAssignedCoins} = require("../../db/user/UserQuery")
 const isPasswordMatches = require("../util/PasswordDecryption")
 const {getConfig} = require("../../db/config/ConfigQuery");
 const getUser = require("../util/CheckExistingUser");
@@ -32,7 +32,7 @@ async function PostUser(router) {
                 return context.status = 401
             }
             let team = context.request.body.user.team
-            if (!(team === "kilid" || team === "second")){
+            if (!(team === "kilid" || team === "second")) {
                 context.body = {error: "team should be defined correctly. we only have \'kilid\' and \'second\' teams currently"}
                 return context.status = 401
             }
@@ -115,6 +115,36 @@ async function PostUser(router) {
     })
 }
 
+async function UpdateAllUsersAssignedCoin(router) {
+    router.post("/:userId/updateAssignedCoin", async (context, next) => {
+        try {
+            let requester = await getUser(context.params.userId, context.request.body.password).then()
+            if (!requester.success) {
+                context.body = requester.body
+                return context.status = requester.status
+            }
+            if (requester.body[0].role.includes("SuperAdmin") || requester.body[0].role.includes("Admin")) {
+                if (context.request.body.coin === undefined ||
+                    context.request.body.team === undefined
+                ) {
+                    context.body = {error: "define coin and team"}
+                    return context.status = 401
+                }
+                let updateResult = await updateAllUsersAssignedCoins(context.request.body.team, context.request.body.coin)
+                context.body = updateResult.body
+                return context.status = updateResult.statusCode
+            } else {
+                context.body = {error: "Not Allowed"}
+                return context.status = 403
+            }
+        } catch (error) {
+            console.log("Error In UserController/UpdateAllUsersAssignedCoin:", error)
+            context.status = 500
+            context.body = error
+        }
+    })
+}
+
 async function getAssignedCoinsFromConfig(team) {
     let config = await getConfig(team).then()
     if (!config.success) console.log("error In getting config: " + config.body.error)
@@ -128,14 +158,13 @@ async function GetUsers(router) {
             if (!getUserResult.success) {
                 context.body = getUserResult.body
                 return context.status = getUserResult.status
+            }
+            let getAllUsersResult = await getUsers()
+            if (!getAllUsersResult.success) {
+                context.body = getAllUsersResult.body.error
+                return context.status = getAllUsersResult.statusCode
             } else {
-                let getAllUsersResult = await getUsers()
-                if (!getAllUsersResult.success) {
-                    context.body = getAllUsersResult.body.error
-                    return context.status = getAllUsersResult.statusCode
-                } else {
-                    return context.body = getAllUsersResult.body.filter((item) => item.username !== context.params.userId);
-                }
+                return context.body = getAllUsersResult.body.filter((item) => item.username !== context.params.userId);
             }
         } catch (error) {
             console.log("Error In UserController/GetUsers:", error)
@@ -147,5 +176,6 @@ async function GetUsers(router) {
 
 module.exports = {
     PostUser,
-    GetUsers
+    GetUsers,
+    UpdateAllUsersAssignedCoin
 }
