@@ -262,13 +262,15 @@
 </div>
 
 <div class="dashboard-right">
-    <div class="transaction-history">
+    <div class="transaction-history" id="transaction-history">
         <div class="box-title">All Transactions</div>
         <div class="transaction-history" id="allTransactionHistory"></div>
     </div>
     <script>
         const allTransActions = document.getElementById("allTransActions").textContent;
-        console.log(allTransActions)
+        if (allTransActions === "[object Object]"){
+            document.getElementById('transaction-history').hidden = true
+        }
         addAllTransactions(allTransActions)
 
         function addAllTransactions(transactions) {

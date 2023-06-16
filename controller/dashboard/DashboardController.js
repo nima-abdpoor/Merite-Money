@@ -20,11 +20,13 @@ async function GetDashboard(router) {
                             .status = 403
                     }
                     let transactions = {}
+                    let allTransactions = {}
                     let getAllUsersResult = await getUsers()
                     transactions.sourceTransactions = (await getTransaction({from: context.params.userId})).body
                     transactions.destinationTransactions = (await getTransaction({to: context.params.userId})).body
                     if (requester[0].role.includes("Admin" || "SuperAdmin")) {
                         transactions.allTransactions = (await getTransaction({all: "0"})).body
+                        allTransactions = preaparAllTransactionsForUI(transactions.allTransactions)
                     }
                     let allUsernames = ""
                     getAllUsersResult.body.forEach(function(user) {
@@ -34,7 +36,7 @@ async function GetDashboard(router) {
                     await context.render("dashboard",
                         {username: requester[0].username, receivedCoins: requester[0].receivedCoins, walletCoins: requester[0].assignedCoins,
                         selection: allUsernames.slice(0, -1), transferredMoney: preaparDestinationTransactionsForUI(transactions.destinationTransactions),
-                        myTransactions: preaparSourceTransactionsForUI(transactions.sourceTransactions), allTransActions: preaparAllTransactionsForUI(transactions.allTransactions)
+                        myTransactions: preaparSourceTransactionsForUI(transactions.sourceTransactions), allTransActions: allTransactions
                         }
                     );
                     return context.status = 200
