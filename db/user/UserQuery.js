@@ -52,7 +52,7 @@ async function updateUserAssignedCoins(username, assignedCoins) {
 async function updateAllUsersAssignedCoins(team, assignedCoins) {
     try {
         await user.updateMany(
-            {team: team}, {$inc: {assignedCoins: assignedCoins}}
+            {team: team}, {$set: {assignedCoins: assignedCoins, receivedCoins: 0}}
         );
         return {success: true, statusCode: 200, body: {"message": "successfully done!"}};
     } catch (error) {

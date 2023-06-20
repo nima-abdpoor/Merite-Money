@@ -28,8 +28,8 @@ async function GetDashboard(router) {
                     if (requester[0].role.includes("Admin" || "SuperAdmin")) {
                         transactions.allTransactions = (await getTransaction({all: "0"})).body
                         transactions.topUsers = (await getUsersByReceivedCoins()).body
-                        topUsers = preaparTopUsersForUI(transactions.topUsers)
-                        allTransactions = preaparAllTransactionsForUI(transactions.allTransactions)
+                        topUsers = prepareTopUsersForUI(transactions.topUsers)
+                        allTransactions = prepareAllTransactionsForUI(transactions.allTransactions)
                     }
                     let allUsernames = ""
                     getAllUsersResult.body.forEach(function(user) {
@@ -38,8 +38,8 @@ async function GetDashboard(router) {
 
                     await context.render("dashboard",
                         {username: requester[0].username, receivedCoins: requester[0].receivedCoins, walletCoins: requester[0].assignedCoins,
-                        selection: allUsernames.slice(0, -1), transferredMoney: preaparDestinationTransactionsForUI(transactions.destinationTransactions),
-                        myTransactions: preaparSourceTransactionsForUI(transactions.sourceTransactions), allTransActions: allTransactions, topUsers: topUsers
+                        selection: allUsernames.slice(0, -1), transferredMoney: prepareDestinationTransactionsForUI(transactions.destinationTransactions),
+                        myTransactions: prepareSourceTransactionsForUI(transactions.sourceTransactions), allTransActions: allTransactions, topUsers: topUsers
                         }
                     );
                     return context.status = 200
@@ -59,7 +59,7 @@ async function GetDashboard(router) {
     })
 }
 
-function preaparDestinationTransactionsForUI(transactions){
+function prepareDestinationTransactionsForUI(transactions){
     let result = "";
     for (let i = 0; i < transactions.length; i++) {
         result = result + `${i}: ${transactions[i].fromId} sent you ${transactions[i].amount} at ${transactions[i].date} with description: ${transactions[i].description} \n`
@@ -67,7 +67,7 @@ function preaparDestinationTransactionsForUI(transactions){
     return result
 }
 
-function preaparSourceTransactionsForUI(transactions){
+function prepareSourceTransactionsForUI(transactions){
     let result = "";
     for (let i = 0; i < transactions.length; i++) {
         result = result + `${i}: I Have sent ${transactions[i].amount} to ${transactions[i].toId} with description: ${transactions[i].description} \n`
@@ -75,7 +75,7 @@ function preaparSourceTransactionsForUI(transactions){
     return result
 }
 
-function preaparAllTransactionsForUI(transactions){
+function prepareAllTransactionsForUI(transactions){
     let result = "";
     for (let i = 0; i < transactions.length; i++) {
         result = result + `${i}: ${transactions[i].fromId} Has sent ${transactions[i].amount} to ${transactions[i].toId} with description: ${transactions[i].description} \n`
@@ -83,13 +83,11 @@ function preaparAllTransactionsForUI(transactions){
     return result
 }
 
-function preaparTopUsersForUI(users){
+function prepareTopUsersForUI(users){
     let result = "";
-    console.log(users)
     for (let i = 0; i < users.length; i++) {
         result = result + `${i}==> ${users[i].username}:${users[i].receivedCoins} \n`
     }
-    console.log(result)
     return result
 }
 
