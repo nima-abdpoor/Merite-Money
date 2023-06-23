@@ -22,7 +22,7 @@ async function GetDashboard(router) {
                     let transactions = {}
                     let allTransactions = {}
                     let topUsers = {}
-                    let getAllUsersResult = await getUsers()
+                    let getAllUsersResult = await getUsers(requester[0].team)
                     transactions.sourceTransactions = (await getTransaction({from: context.params.userId})).body
                     transactions.destinationTransactions = (await getTransaction({to: context.params.userId})).body
                     if (requester[0].role.includes("Admin" || "SuperAdmin")) {
@@ -32,9 +32,10 @@ async function GetDashboard(router) {
                         allTransactions = prepareAllTransactionsForUI(transactions.allTransactions)
                     }
                     let allUsernames = ""
-                    getAllUsersResult.body.forEach(function(user) {
-                        allUsernames += user.username + ","
-                    });
+                    for (let i = 0; i <getAllUsersResult.body.length; i++) {
+                        if (getAllUsersResult.body[i].username === requester[0].username) continue
+                        allUsernames += getAllUsersResult.body[i].username + ","
+                    }
 
                     await context.render("dashboard",
                         {username: requester[0].username, receivedCoins: requester[0].receivedCoins, walletCoins: requester[0].assignedCoins,
