@@ -152,14 +152,19 @@ async function getAssignedCoinsFromConfig(team) {
 }
 
 async function GetUsers(router) {
-    router.get("/:userId/users", async (context, next) => {
+    router.get("/backEnd/:userId/users", async (context, next) => {
         try {
             let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
             if (!getUserResult.success) {
                 context.body = getUserResult.body
                 return context.status = getUserResult.status
             }
-            let getAllUsersResult = await getUsers()
+            let team = context.request.body.team
+            if (team === undefined) {
+                context.body = "please define team!"
+                return context.status = 400
+            }
+            let getAllUsersResult = await getUsers(team)
             if (!getAllUsersResult.success) {
                 context.body = getAllUsersResult.body.error
                 return context.status = getAllUsersResult.statusCode
