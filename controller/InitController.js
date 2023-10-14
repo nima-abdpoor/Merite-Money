@@ -1,5 +1,5 @@
 const {transferMoney, getTransactions} = require("./transaction/TransactionController")
-const {PostUser, GetUsers, UpdateAllUsersAssignedCoin} = require("./user/UserController")
+const {PostUser, GetUsers, UpdateAllUsersAssignedCoin, GetTopUsers} = require("./user/UserController")
 const initConfigController = require("./config/ConfigController")
 const {LoginController, GetLogin} = require("./login/LoginController");
 const RootController = require("./root/RootController");
@@ -16,6 +16,7 @@ async function startController(router) {
     await PostUser(router)
     await GetUsers(router)
     await UpdateAllUsersAssignedCoin(router)
+    await GetTopUsers(router)
 
     //Transactions
     await transferMoney(router)

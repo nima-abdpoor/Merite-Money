@@ -1,5 +1,5 @@
 const user = require("../../model/User")
-const {createUser, updateUserRole, getUsers, updateAllUsersAssignedCoins} = require("../../db/user/UserQuery")
+const {createUser, updateUserRole, getUsers, updateAllUsersAssignedCoins, getUsersByReceivedCoins} = require("../../db/user/UserQuery")
 const isPasswordMatches = require("../util/PasswordDecryption")
 const {getConfig} = require("../../db/config/ConfigQuery");
 const getUser = require("../util/CheckExistingUser");
@@ -117,7 +117,7 @@ async function PostUser(router) {
 }
 
 async function UpdateAllUsersAssignedCoin(router) {
-    router.post("/:userId/updateAssignedCoin", async (context, next) => {
+    router.post("/backEnd/:userId/updateAssignedCoin", async (context, next) => {
         try {
             let requester = await getUser(context.params.userId, context.request.body.password).then()
             if (!requester.success) {
@@ -189,8 +189,39 @@ async function GetUsers(router) {
     })
 }
 
+async function GetTopUsers(router) {
+    router.get("/backEnd/:userId/topUsers", async (context, next) => {
+        try {
+            if (context.request.body.password) {
+                let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
+                if (!getUserResult.success) {
+                    context.body = getUserResult.body
+                    return context.status = getUserResult.status
+                }
+            } else {
+                let token = context.cookies.get("access_token")
+                const data = jwt.verify(token, "SecretKey");
+                if (data.username !== context.params.userId) {
+                    return context.body = {error: "Access Denied!"}
+                        .status = 403
+                }
+            }
+
+            let topUsers = await getUsersByReceivedCoins()
+            console.log(topUsers)
+            context.status = topUsers.statusCode
+            return context.body = topUsers.body
+        } catch (error) {
+            console.log("Error In UserController/GetTopUsers:", error)
+            context.status = 500
+            context.body = error
+        }
+    })
+}
+
 module.exports = {
     PostUser,
     GetUsers,
-    UpdateAllUsersAssignedCoin
+    UpdateAllUsersAssignedCoin,
+    GetTopUsers
 }
