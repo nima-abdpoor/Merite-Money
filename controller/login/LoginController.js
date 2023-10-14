@@ -6,7 +6,7 @@ const views = require("co-views");
 const render = views("views", { map: { html: 'swig' }})
 
 async function LoginController(router) {
-    router.post("/login", async (context, next) => {
+    router.post("/backEnd/login", async (context, next) => {
         try {
             let getUserResult = await getUser(context.request.body.username, context.request.body.password)
             if (!getUserResult.success) {
@@ -20,7 +20,14 @@ async function LoginController(router) {
                 context.cookies.set("access_token", accessToken, {
                     httpOnly: true,
                 })
-                return context.redirect("/" + context.request.body.username + "/dashboard")
+                context.status = 200
+                return context.body = {
+                    username: getUserResult.body[0].username,
+                    assignedCoins: getUserResult.body[0].assignedCoins,
+                    receivedCoins: getUserResult.body[0].receivedCoins,
+                    team: getUserResult.body[0].team,
+                    access_token: accessToken
+                }
             }
         } catch (error) {
             console.log("Error In LoginController:", error)
