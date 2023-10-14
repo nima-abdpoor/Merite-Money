@@ -3,6 +3,7 @@ const {createUser, updateUserRole, getUsers, updateAllUsersAssignedCoins} = requ
 const isPasswordMatches = require("../util/PasswordDecryption")
 const {getConfig} = require("../../db/config/ConfigQuery");
 const getUser = require("../util/CheckExistingUser");
+const jwt = require("jsonwebtoken");
 
 async function PostUser(router) {
     router.post("/:userId/user", async (context, next) => {
@@ -154,10 +155,19 @@ async function getAssignedCoinsFromConfig(team) {
 async function GetUsers(router) {
     router.get("/backEnd/:userId/users", async (context, next) => {
         try {
-            let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
-            if (!getUserResult.success) {
-                context.body = getUserResult.body
-                return context.status = getUserResult.status
+            if (context.request.body.password) {
+                let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
+                if (!getUserResult.success) {
+                    context.body = getUserResult.body
+                    return context.status = getUserResult.status
+                }
+            } else {
+                let token = context.cookies.get("access_token")
+                const data = jwt.verify(token, "SecretKey");
+                if (data.username !== context.params.userId) {
+                    return context.body = {error: "Access Denied!"}
+                        .status = 403
+                }
             }
             let team = context.request.body.team
             if (team === undefined) {
