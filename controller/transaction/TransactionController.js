@@ -5,7 +5,7 @@ const {transferQuery, getTransaction} = require("../../db/transaction/Transactio
 const jwt = require("jsonwebtoken");
 
 async function transferMoney(router) {
-    router.post("/:userId/transfer", async (context, next) => {
+    router.post("/backEnd/:userId/transfer", async (context, next) => {
         try {
             let userId = context.params.userId
             let getUserResult
@@ -21,6 +21,7 @@ async function transferMoney(router) {
                 getUserResult.body.push(result[0])
                 let token = context.cookies.get("access_token")
                 const data = jwt.verify(token, "SecretKey");
+                console.log(data.username)
                 if (data.username !== context.params.userId) {
                     context.redirect("/login")
                     return context.body = {error: "Access Denied!"}
@@ -73,11 +74,11 @@ async function transferMoney(router) {
                     }
                 } else {
                     context.body = {error: "You Dont Have Enough Coins!"}
-                    return context.status = 401
+                    return context.status = 400
                 }
             } else {
                 context.body = {error: "Invalid Amount"}
-                return context.status = 401
+                return context.status = 400
             }
         } catch (error) {
             if (error.message === "jwt must be provided") {
@@ -91,8 +92,8 @@ async function transferMoney(router) {
     })
 }
 
-async function getTransactions(router, _transaction) {
-    router.get("/:userId/transactions", async (context, next) => {
+async function getTransactions(router) {
+    router.get("/backEnd/:userId/transactions", async (context, next) => {
         try {
             let userId = context.params.userId
             let getUserResult
@@ -106,25 +107,23 @@ async function getTransactions(router, _transaction) {
                 let token = context.cookies.get("access_token")
                 const data = jwt.verify(token, "SecretKey");
                 if (data.username !== context.params.userId) {
-                    context.redirect("/login")
                     return context.body = {error: "Access Denied!"}
                         .status = 403
                 }
             }
-            let result = await getTransaction(_transaction)
-            if (!result.success){
-                return context.body = result.body
-                    .status = result.statusCode
-            }else {
-                return context.body = result.body
-                    .status = result.statusCode
-            }
+            let result
+            if (context.request.body.from !== undefined && context.request.body.to !== undefined) result = await getTransaction({from: context.request.body.from, to: context.request.body.to})
+            else if (context.request.body.from !== undefined) result = await getTransaction({from: context.request.body.from})
+            else if (context.request.body.to !== undefined) result = await getTransaction({to: context.request.body.to})
+            else result = await getTransaction({all: "all"})
+            context.status = result.statusCode
+            return context.body = result.body
         } catch (error) {
             if (error.message === "jwt must be provided") {
                 context.body = {error: "403: " + error.message}
                 return context.status = 403
             }
-            console.log("Error In ConfigController:", error.message)
+            console.log("Error In getTransactions:", error.message)
             context.body = {error: error}
             return context.status = 500
         }

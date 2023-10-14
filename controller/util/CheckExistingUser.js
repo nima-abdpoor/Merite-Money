@@ -12,7 +12,7 @@ async function getUser(userId, password) {
     if (result){
         response = {success: true, body: requester}
     }else {
-        response = {body: "Incorrect Password", status: 403, success: false}
+        response = {body: {error: "Incorrect Password"}, status: 403, success: false}
     }
     return response
 }

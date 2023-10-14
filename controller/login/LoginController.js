@@ -1,7 +1,5 @@
 const getUser = require("../util/CheckExistingUser");
 const jwt = require('jsonwebtoken');
-const { createReadStream } =  require("fs");
-
 const views = require("co-views");
 const render = views("views", { map: { html: 'swig' }})
 

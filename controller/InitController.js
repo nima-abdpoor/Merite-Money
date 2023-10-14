@@ -19,7 +19,7 @@ async function startController(router) {
 
     //Transactions
     await transferMoney(router)
-    // await getTransactions(router, {from: context.params.userId})
+    await getTransactions(router)
 
     //Login
     await LoginController(router)

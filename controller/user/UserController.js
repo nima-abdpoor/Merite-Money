@@ -18,7 +18,7 @@ async function PostUser(router) {
                     return context.status = 500
                 } else {
                     if (!isMatch) {
-                        context.body = "Incorrect Password!"
+                        context.body = {error: "Incorrect Password!"}
                         return context.status = 401
                     }
                 }
