@@ -1,5 +1,7 @@
 const getUser = require("../util/CheckExistingUser")
 const {createConfig} = require("../../db/config/ConfigQuery");
+const jwt = require("jsonwebtoken");
+const UserModel = require("../../model/User");
 
 async function PostConfig(router) {
     router.post("/:userId/config", async (context, next) => {
@@ -39,4 +41,39 @@ async function PostConfig(router) {
     })
 }
 
-module.exports = PostConfig
+async function GetConfig(router){
+    router.get("/backEnd/:userId/config", async (context, next) => {
+        try{
+            if (context.request.body.password) {
+                let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
+                if (!getUserResult.success) {
+                    context.body = getUserResult.body
+                    return context.status = getUserResult.status
+                }
+            } else {
+                let token = context.cookies.get("access_token")
+                const data = jwt.verify(token, "SecretKey");
+                if (data.username !== context.params.userId) {
+                    return context.body = {error: "Access Denied!"}
+                        .status = 403
+                }
+            }
+            const user = await UserModel.find({username: context.params.userId})
+            return context.body = {
+                username: user[0].username,
+                assignedCoins: user[0].assignedCoins,
+                receivedCoins: user[0].receivedCoins,
+                team: user[0].team
+            }
+        }catch (error){
+            console.log("Error In GetConfigController:", error)
+            context.status = 500
+            return context.body = {error: error}
+        }
+    })
+}
+
+module.exports = {
+    PostConfig,
+    GetConfig
+}
