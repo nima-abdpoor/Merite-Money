@@ -153,7 +153,7 @@ async function getAssignedCoinsFromConfig(team) {
 }
 
 async function GetUsers(router) {
-    router.get("/backEnd/:userId/users", async (context, next) => {
+    router.post("/backEnd/:userId/users", async (context, next) => {
         try {
             if (context.request.body.password) {
                 let getUserResult = await getUser(context.params.userId, context.request.body.password).then()
