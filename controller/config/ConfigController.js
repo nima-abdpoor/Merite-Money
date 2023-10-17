@@ -54,8 +54,11 @@ async function GetConfig(router) {
                 team: user[0].team
             }
         } catch (error) {
-            console.log("Error In GetConfigController:", error)
-            context.status = 500
+            if (error.name === "JsonWebTokenError") context.status = 403
+            else {
+                console.log("Error In GetConfigController:", error)
+                context.status = 500
+            }
             return context.body = {error: error}
         }
     })

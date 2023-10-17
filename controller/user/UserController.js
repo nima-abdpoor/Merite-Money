@@ -182,9 +182,11 @@ async function GetUsers(router) {
                 return context.body = getAllUsersResult.body.filter((item) => item.username !== context.params.userId);
             }
         } catch (error) {
-            console.log("Error In UserController/GetUsers:", error)
-            context.status = 500
-            context.body = error
+            if (error.name === "JsonWebTokenError") context.status = 403
+            else {
+                console.log("Error In UserController/GetUsers:", error)
+                context.status = 500
+            }
         }
     })
 }
@@ -212,9 +214,11 @@ async function GetTopUsers(router) {
             context.status = topUsers.statusCode
             return context.body = topUsers.body
         } catch (error) {
-            console.log("Error In UserController/GetTopUsers:", error)
-            context.status = 500
-            context.body = error
+            if (error.name === "JsonWebTokenError") context.status = 403
+            else {
+                console.log("Error In UserController/GetTopUsers:", error)
+                context.status = 500
+            }
         }
     })
 }
