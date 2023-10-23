@@ -26,16 +26,16 @@ async function getTransaction(_transaction) {
         if (_transaction.from) {
             // let dateQuery = { $month: new Date().toISOString().getMonth() + 1 }
             if (_transaction.to){
-                let result = await transaction.find({fromId: _transaction.from,toId: _transaction.to, date:  {$lt: endDate} }, {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0})
+                let result = await transaction.find({fromId: _transaction.from,toId: _transaction.to, date:  {$lt: endDate} }, {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0}).sort({date: -1})
                 return {success: true, statusCode: 200, body: result}
             }
-            let result = await transaction.find({fromId: _transaction.from, date:  {$lt: endDate} }, {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0})
+            let result = await transaction.find({fromId: _transaction.from, date:  {$lt: endDate} }, {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0}).sort({date: -1})
             return {success: true, statusCode: 200, body: result}
         } else if (_transaction.to) {
-            let result = await transaction.find({toId: _transaction.to, date:  {$lt: endDate}},  {"date": 1, "amount": 1, "description": 1,"fromId": 1, "_id": 0})
+            let result = await transaction.find({toId: _transaction.to, date:  {$lt: endDate}},  {"date": 1, "amount": 1, "description": 1,"fromId": 1, "_id": 0}).sort({date: -1})
             return {success: true, statusCode: 200, body: result}
         }else if (_transaction.all){
-            let result = await transaction.find({},  {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0})
+            let result = await transaction.find({},  {"date": 1, "amount": 1, "description": 1,"fromId": 1,"toId": 1, "_id": 0}).sort({date: -1})
             return {success: true, statusCode: 200, body: result}
         }else {
             return {success: false, statusCode: 401, body: {error: "Invalid Query"}}

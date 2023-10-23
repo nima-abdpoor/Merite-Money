@@ -91,7 +91,7 @@ async function getUsers(team) {
 async function getUsersByReceivedCoins() {
     try {
         let query = {role: {"$in": ["User"]}}
-        let result = await user.find(query, {"username": 1, "receivedCoins": 1, "_id": 0}).sort({"receivedCoins": -1})
+        let result = await user.find(query, {"username": 1, "receivedCoins": 1, "_id": 0}).sort({"receivedCoins": -1}).limit(3)
         return {success: true, statusCode: 200, body: result}
     } catch (error) {
         console.error("UserQuery.js/ getUsersByReceivedCoins:" + error.name + error.code + "error:", error);
