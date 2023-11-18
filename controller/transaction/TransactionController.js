@@ -3,6 +3,7 @@ const {updateUserReceivedCoins, updateUserAssignedCoins} = require("../../db/use
 const user = require("../../model/User");
 const {transferQuery, getTransaction} = require("../../db/transaction/TransactionQuery");
 const jwt = require("jsonwebtoken");
+const {sendMessage} = require("../../service/discord");
 
 async function transferMoney(router) {
     router.post("/backEnd/:userId/transfer", async (context, next) => {
@@ -57,6 +58,7 @@ async function transferMoney(router) {
                                         context.body = transferMoneyResult.body.error
                                         return context.status = 500
                                     } else {
+                                        await sendMessage("705402640468541491", "916554753322934272", "چون دوسش داره")
                                         context.body = {success: true}
                                         return context.status = 200
                                     }
