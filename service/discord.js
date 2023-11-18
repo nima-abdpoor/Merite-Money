@@ -15,7 +15,7 @@ async function sendMessage(fromId, toId, description){
 }
 
 function provideDiscordBot(){
-    client.login('MTE3NDU5OTg0MjMyOTI4MDUzMw.GOpzTP.7MmQKlBMfTYRRq51vQ_LoBFVL6QejnOA8KhP5E');
+    client.login('MTE3NDU5OTg0MjMyOTI4MDUzMw.GfoqZ8.DnGL19PCzZpNnKTumssGlDWVHslTh9qh4vaFXc');
     client.on('ready', () => {
         console.log("DiscordBot is Ready...")
         chan = client.channels.cache.get("960245583883403299");
