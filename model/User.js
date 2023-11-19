@@ -23,7 +23,8 @@ const userSchema = new Schema({
         type: Number,
         value: 0
     },
-    team: String
+    team: String,
+    discordId: String
 })
 userSchema.pre("save", function (next) {
     const user = this

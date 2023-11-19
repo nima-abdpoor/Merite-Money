@@ -8,6 +8,8 @@ const {sendMessage} = require("../../service/discord");
 async function transferMoney(router) {
     router.post("/backEnd/:userId/transfer", async (context, next) => {
         try {
+            let userResult
+            let destinationUser
             let userId = context.params.userId
             let getUserResult
             if (context.request.body.password) {
@@ -17,12 +19,11 @@ async function transferMoney(router) {
                     return context.status = getUserResult.status
                 }
             } else {
-                let result = await user.find({username: userId})
+                userResult = await user.find({username: userId})
                 getUserResult = {body: []}
-                getUserResult.body.push(result[0])
+                getUserResult.body.push(userResult[0])
                 let token = context.cookies.get("access_token")
                 const data = jwt.verify(token, "SecretKey");
-                console.log(data.username)
                 if (data.username !== context.params.userId) {
                     context.redirect("/login")
                     return context.body = {error: "Access Denied!"}
@@ -37,20 +38,20 @@ async function transferMoney(router) {
                         return context.status = 403
                     } else {
                         let destinationUsername = context.request.body.transfer.destination
-                        const destination = await user.find({username: destinationUsername})
-                        if (!"username" in destination || destination.length === 0) {
+                        destinationUser = await user.find({username: destinationUsername})
+                        if (!"username" in destinationUser || destinationUser.length === 0) {
                             context.status = 401
                             return context.body = {error: "Destination Username Not Found"}
                         } else {
                             let updateUserAssignCoinsResult = await updateUserAssignedCoins(userId, -amount)
                             if (updateUserAssignCoinsResult.success) {
-                                let updateUserReceivedCoinsResult = await updateUserReceivedCoins(destination[0].username, amount)
+                                let updateUserReceivedCoinsResult = await updateUserReceivedCoins(destinationUser[0].username, amount)
                                 if (updateUserReceivedCoinsResult.success) {
                                     let transferMoneyResult = await transferQuery({
                                         amount: amount,
                                         description: context.request.body.transfer.description,
                                         fromId: userId,
-                                        toId: destination[0].username,
+                                        toId: destinationUser[0].username,
                                         date: new Date()
                                     })
                                     if (!transferMoneyResult.success) {
@@ -58,7 +59,7 @@ async function transferMoney(router) {
                                         context.body = transferMoneyResult.body.error
                                         return context.status = 500
                                     } else {
-                                        await sendMessage("705402640468541491", "916554753322934272", "چون دوسش داره")
+                                        Promise.resolve(sendMessage(userResult[0].discordId, destinationUser[0].discordId, context.request.body.transfer.description))
                                         context.body = {success: true}
                                         return context.status = 200
                                     }

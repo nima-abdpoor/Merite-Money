@@ -8,7 +8,8 @@ async function createUser(_user) {
             role: _user.role,
             assignedCoins: _user.assignedCoins,
             receivedCoins: _user.receivedCoins,
-            team: _user.team
+            team: _user.team,
+            discordId: _user.discordId
         });
         return {body: {success: true}, statusCode: 200};
     } catch (error) {

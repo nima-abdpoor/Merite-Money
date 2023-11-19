@@ -55,7 +55,8 @@ async function PostUser(router) {
                                 role: [_role],
                                 assignedCoins: config.body[0].assignedCoins,
                                 team: team,
-                                receivedCoins: 0
+                                receivedCoins: 0,
+                                discordId: context.request.body.user.discordId
                             })
                             context.body = creationUserResult.body
                             return context.status = creationUserResult.statusCode
