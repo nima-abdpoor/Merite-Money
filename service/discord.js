@@ -8,17 +8,17 @@ async function sendMessage(fromId, toId, description){
     <@${fromId}> قدردانی میکنه از <@${toId}> 
     : ${description}
     `)
-    const emojis = PickRandomEmojis(10)
+    const emojis = PickRandomEmojis(process.env.DISCORD_REACTION_NUMBER)
     for (const entry of emojis) {
         await result.react(entry)
     }
 }
 
 function provideDiscordBot(){
-    client.login('MTE3NDU5OTg0MjMyOTI4MDUzMw.GcgyuS.LXKTwyz73pYqZtfdFHBVXS1bQOdNoJ0ZdsnVo4');
+    client.login(process.env.DISCORD_TOKEN);
     client.on('ready', () => {
         console.log("DiscordBot is Ready...")
-        chan = client.channels.cache.get("960245583883403300");
+        chan = client.channels.cache.get(process.env.DISCORD_CHANNEL);
     });
 }
 

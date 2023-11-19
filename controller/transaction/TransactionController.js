@@ -59,7 +59,8 @@ async function transferMoney(router) {
                                         context.body = transferMoneyResult.body.error
                                         return context.status = 500
                                     } else {
-                                        Promise.resolve(sendMessage(userResult[0].discordId, destinationUser[0].discordId, context.request.body.transfer.description))
+                                        if (process.env.DISCORD_BOT_ACTIVE === "true")
+                                            Promise.resolve(sendMessage(userResult[0].discordId, destinationUser[0].discordId, context.request.body.transfer.description))
                                         context.body = {success: true}
                                         return context.status = 200
                                     }
@@ -115,7 +116,10 @@ async function getTransactions(router) {
                 }
             }
             let result
-            if (context.request.body.from !== undefined && context.request.body.to !== undefined) result = await getTransaction({from: context.request.body.from, to: context.request.body.to})
+            if (context.request.body.from !== undefined && context.request.body.to !== undefined) result = await getTransaction({
+                from: context.request.body.from,
+                to: context.request.body.to
+            })
             else if (context.request.body.from !== undefined) result = await getTransaction({from: context.request.body.from})
             else if (context.request.body.to !== undefined) result = await getTransaction({to: context.request.body.to})
             else result = await getTransaction({all: "all"})
