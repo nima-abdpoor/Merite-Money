@@ -166,16 +166,12 @@ async function GetUsers(router) {
                 let token = context.cookies.get("access_token")
                 const data = jwt.verify(token, "SecretKey");
                 if (data.username !== context.params.userId) {
+                    context.status = 403
                     return context.body = {error: "Access Denied!"}
-                        .status = 403
                 }
             }
-            let team = context.request.body.team
-            if (team === undefined) {
-                context.body = "please define team!"
-                return context.status = 400
-            }
-            let getAllUsersResult = await getUsers(team)
+            let u = await user.find({username: context.params.userId})
+            let getAllUsersResult = await getUsers(u[0].team)
             if (!getAllUsersResult.success) {
                 context.body = getAllUsersResult.body.error
                 return context.status = getAllUsersResult.statusCode
