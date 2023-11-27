@@ -33,8 +33,8 @@ async function PostUser(router) {
                 return context.status = 401
             }
             let team = context.request.body.user.team
-            if (!(team === "kilid" || team === "second")) {
-                context.body = {error: "team should be defined correctly. we only have \'kilid\' and \'second\' teams currently"}
+            if (!(team === "kilid" || team === "kariz" || team === "shakeylead")) {
+                context.body = {error: "team should be defined correctly."}
                 return context.status = 401
             }
             let _role = context.request.body.user.role
