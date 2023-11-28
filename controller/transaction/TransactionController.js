@@ -1,5 +1,5 @@
 const getUser = require("../util/CheckExistingUser");
-const {updateUserReceivedCoins, updateUserAssignedCoins} = require("../../db/user/UserQuery");
+const {updateUserReceivedCoins, updateUserAssignedCoins, getUsers} = require("../../db/user/UserQuery");
 const user = require("../../model/User");
 const {transferQuery, getTransaction} = require("../../db/transaction/TransactionQuery");
 const jwt = require("jsonwebtoken");
@@ -115,14 +115,16 @@ async function getTransactions(router) {
                         .status = 403
                 }
             }
+            let u = await user.find({username: context.params.userId})
             let result
             if (context.request.body.from !== undefined && context.request.body.to !== undefined) result = await getTransaction({
                 from: context.request.body.from,
-                to: context.request.body.to
+                to: context.request.body.to,
+                team: u[0].team
             })
-            else if (context.request.body.from !== undefined) result = await getTransaction({from: context.request.body.from})
-            else if (context.request.body.to !== undefined) result = await getTransaction({to: context.request.body.to})
-            else result = await getTransaction({all: "all"})
+            else if (context.request.body.from !== undefined) result = await getTransaction({from: context.request.body.from, team: u[0].team})
+            else if (context.request.body.to !== undefined) result = await getTransaction({to: context.request.body.to, team: u[0].team})
+            else result = await getTransaction({all: "all", team: u[0].team})
             context.status = result.statusCode
             return context.body = result.body
         } catch (error) {
