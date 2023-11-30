@@ -8,7 +8,8 @@ async function transferQuery(_transfer) {
             date: _transfer.date,
             description: _transfer.description,
             fromId: _transfer.fromId,
-            toId: _transfer.toId
+            toId: _transfer.toId,
+            team: _transfer.team
         });
         return {success: true, statusCode: 200};
     } catch (error) {

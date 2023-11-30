@@ -8,7 +8,8 @@ const transactionSchema = new Schema({
     date: Date,
     description: String,
     fromId: String,
-    toId: String
+    toId: String,
+    team: String
 })
 
 const Transaction = mongoose.model("transaction", transactionSchema)

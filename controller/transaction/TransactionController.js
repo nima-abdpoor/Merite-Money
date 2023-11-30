@@ -52,6 +52,7 @@ async function transferMoney(router) {
                                         description: context.request.body.transfer.description,
                                         fromId: userId,
                                         toId: destinationUser[0].username,
+                                        team: getUserResult.body[0].team,
                                         date: new Date()
                                     })
                                     if (!transferMoneyResult.success) {
