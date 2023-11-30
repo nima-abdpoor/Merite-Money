@@ -206,8 +206,8 @@ async function GetTopUsers(router) {
                 }
             }
 
-            let topUsers = await getUsersByReceivedCoins()
-            console.log(topUsers)
+            let u = await user.find({username: context.params.userId})
+            let topUsers = await getUsersByReceivedCoins(u[0].team)
             context.status = topUsers.statusCode
             return context.body = topUsers.body
         } catch (error) {
