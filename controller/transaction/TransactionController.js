@@ -61,7 +61,7 @@ async function transferMoney(router) {
                                         return context.status = 500
                                     } else {
                                         if (process.env.DISCORD_BOT_ACTIVE === "true" && userResult[0].discordId && destinationUser[0].discordId)
-                                            Promise.resolve(sendMessage(userResult[0].discordId, destinationUser[0].discordId, context.request.body.transfer.description))
+                                            Promise.resolve(sendMessage(userResult[0].discordId, destinationUser[0].discordId, context.request.body.transfer.description, userResult[0].team))
                                         context.body = {success: true}
                                         return context.status = 200
                                     }

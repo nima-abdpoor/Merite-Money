@@ -1,0 +1,19 @@
+server:
+  ADDRESS: "127.0.0.1"
+  PORT: "4000"
+
+
+discord:
+  token: "token"
+  enable: true
+  team: [ {
+    enable: true,
+    name: "kilid",
+    channelId: "960543077536251934",
+    reactionNumbers: 10
+  }, {
+    enable: true,
+    name: "shakeylead",
+    channelId: "960543011937341510",
+    reactionNumbers: 10
+  } ]
