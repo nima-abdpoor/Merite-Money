@@ -38,10 +38,10 @@ async function updateUserRole(username, roles) {
     }
 }
 
-async function updateUserAssignedCoins(username, assignedCoins) {
+async function updateUserAssignedCoins(usernames, assignedCoins) {
     try {
         await user.updateOne(
-            {username: username}, {$inc: {assignedCoins: assignedCoins}}
+            {username: {$in: usernames} }, {$inc: {assignedCoins: assignedCoins}}
         );
         return {success: true, statusCode: 200};
     } catch (error) {
@@ -62,10 +62,10 @@ async function updateAllUsersAssignedCoins(team, assignedCoins) {
     }
 }
 
-async function updateUserReceivedCoins(username, receivedCoins) {
+async function updateUserReceivedCoins(usernames, receivedCoins) {
     try {
-        await user.updateOne(
-            {username: username}, {$inc: {receivedCoins: receivedCoins}}
+        await user.updateMany(
+            {username: {$in: usernames} }, {$inc: {receivedCoins: receivedCoins}}
         );
         return {success: true, statusCode: 200};
     } catch (error) {

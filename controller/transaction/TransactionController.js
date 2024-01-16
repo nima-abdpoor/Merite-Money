@@ -9,9 +9,14 @@ async function transferMoney(router) {
     router.post("/backEnd/:userId/transfer", async (context, next) => {
         try {
             let userResult
-            let destinationUser
+            let destinationUsers
             let userId = context.params.userId
             let getUserResult
+            let destinations = context.request.body.transfer.destination
+            if (typeof destinations === "string" || typeof destinations !== "object" || !destinations){
+                context.body = {message: "destination should be an array"}
+                return context.status = 401
+            }
             if (context.request.body.password) {
                 getUserResult = await getUser(userId, context.request.body.password).then()
                 if (!getUserResult.success) {
@@ -32,26 +37,27 @@ async function transferMoney(router) {
             }
             let amount = context.request.body.transfer.amount
             if (amount > 0) {
-                if (getUserResult.body[0].assignedCoins >= amount) {
-                    if (context.request.body.transfer.destination === userId) {
+                if (getUserResult.body[0].assignedCoins >= (amount * destinations.length)) {
+                    if (destinations.includes(userId)) {
                         context.body = {error: "Not Allowed"}
                         return context.status = 403
                     } else {
                         let destinationUsername = context.request.body.transfer.destination
-                        destinationUser = await user.find({username: destinationUsername})
-                        if (!"username" in destinationUser || destinationUser.length === 0) {
+                        destinationUsers = await user.find({username: {$in: destinationUsername}})
+                        let destinationUsernames = destinationUsers.map( user => user.username)
+                        if (!"username" in destinationUsernames || destinationUsernames.length === 0) {
                             context.status = 401
                             return context.body = {error: "Destination Username Not Found"}
                         } else {
-                            let updateUserAssignCoinsResult = await updateUserAssignedCoins(userId, -amount)
+                            let updateUserAssignCoinsResult = await updateUserAssignedCoins(userId, -destinationUsernames.length * amount)
                             if (updateUserAssignCoinsResult.success) {
-                                let updateUserReceivedCoinsResult = await updateUserReceivedCoins(destinationUser[0].username, amount)
+                                let updateUserReceivedCoinsResult = await updateUserReceivedCoins(destinationUsernames, amount)
                                 if (updateUserReceivedCoinsResult.success) {
                                     let transferMoneyResult = await transferQuery({
                                         amount: amount,
                                         description: context.request.body.transfer.description,
                                         fromId: userId,
-                                        toId: destinationUser[0].username,
+                                        toId: destinationUsernames,
                                         team: getUserResult.body[0].team,
                                         date: new Date()
                                     })
@@ -60,8 +66,9 @@ async function transferMoney(router) {
                                         context.body = transferMoneyResult.body.error
                                         return context.status = 500
                                     } else {
-                                        if (process.env.DISCORD_BOT_ACTIVE === "true" && userResult[0].discordId && destinationUser[0].discordId)
-                                            Promise.resolve(sendMessage(userResult[0].discordId, destinationUser[0].discordId, context.request.body.transfer.description, userResult[0].team))
+                                        let discordIds = destinationUsers.map(user => user.discordId)
+                                        if (process.env.DISCORD_BOT_ACTIVE === "true" && discordIds && discordIds.length > 0)
+                                            Promise.resolve(sendMessage(userResult[0].discordId, discordIds, context.request.body.transfer.description, userResult[0].team))
                                         context.body = {success: true}
                                         return context.status = 200
                                     }
