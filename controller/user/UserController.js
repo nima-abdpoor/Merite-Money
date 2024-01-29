@@ -1,15 +1,16 @@
 const user = require("../../model/User")
 const {createUser, updateUserRole, getUsers, updateAllUsersAssignedCoins, getUsersByReceivedCoins} = require("../../db/user/UserQuery")
 const isPasswordMatches = require("../util/PasswordDecryption")
-const {getConfig} = require("../../db/config/ConfigQuery");
+const {getConfig, getValidTeams} = require("../../db/config/ConfigQuery");
 const getUser = require("../util/CheckExistingUser");
 const jwt = require("jsonwebtoken");
+const {request} = require("express");
 
 async function PostUser(router) {
     router.post("/:userId/user", async (context, next) => {
         try {
             const requester = await user.find({username: context.params.userId})
-            if (!"username" in requester) {
+            if (!requester || !"username" in requester) {
                 context.body = "User Not Found"
                 return context.status = 404
             }
@@ -33,7 +34,8 @@ async function PostUser(router) {
                 return context.status = 401
             }
             let team = context.request.body.user.team
-            if (!(team === "kilid" || team === "kariz" || team === "shakeylead")) {
+            let config = (await getValidTeams()).body.map(item => item.team)
+            if (!config.includes(team)) {
                 context.body = {error: "team should be defined correctly."}
                 return context.status = 401
             }

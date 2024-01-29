@@ -23,8 +23,19 @@ async function getConfig(team) {
     }
 }
 
+async function getValidTeams() {
+    try {
+        let result = await config.find({}, {"team": 1, "_id": 0})
+        return {body: result, statusCode: 200, success: true};
+    } catch (error) {
+        console.error("ConfigQuery.js" + error.name + error.code + "error:", error);
+        return {body: {error: error.message}, success: false, statusCode: 500};
+    }
+}
+
 
 module.exports = {
     createConfig,
-    getConfig
+    getConfig,
+    getValidTeams
 }

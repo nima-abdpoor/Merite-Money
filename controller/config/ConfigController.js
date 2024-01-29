@@ -18,10 +18,6 @@ async function PostConfig(router) {
                 return context.status = 401
             }
             let team = context.request.body.config.team
-            if (!(team === "kilid" || team === "kariz" || team === "shakeylead")) {
-                context.body = {error: "team should be defined correctly."}
-                return context.status = 401
-            }
             if (getUserResult.body[0].role.includes("Admin") || getUserResult.body[0].role.includes("SuperAdmin")) {
                 let configCreationResult = await createConfig({
                     assignedCoins: context.request.body.config.assignedCoins,
