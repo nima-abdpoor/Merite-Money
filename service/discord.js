@@ -5,6 +5,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 let chan = {}
 let teamChannelMap = new Map()
 async function sendMessage(fromId, toIds, description, team){
+    chan = teamChannelMap.get(team)
     let discordIds = toIds.map(item => `<@${item}>`).join(', ');
     let discordSourceId = `<@${fromId}>`
     console.log(discordIds)
