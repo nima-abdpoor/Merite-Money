@@ -4,10 +4,13 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
 let chan = {}
 let teamChannelMap = new Map()
-async function sendMessage(fromId, toId, description, team){
-    chan = teamChannelMap.get(team)
+async function sendMessage(fromId, toIds, description, team){
+    let discordIds = toIds.map(item => `<@${item}>`).join(', ');
+    let discordSourceId = `<@${fromId}>`
+    console.log(discordIds)
     const result = await chan.send(`
-    <@${fromId}> قدردانی میکنه از <@${toId}> 
+      ${discordSourceId}قدردانی میکنه از: 
+    ${discordIds}
     : ${description}
     `)
     const emojis = PickRandomEmojis(process.env.DISCORD_REACTION_NUMBER)
