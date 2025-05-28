@@ -4,7 +4,6 @@ const isPasswordMatches = require("../util/PasswordDecryption")
 const {getConfig, getValidTeams} = require("../../db/config/ConfigQuery");
 const getUser = require("../util/CheckExistingUser");
 const jwt = require("jsonwebtoken");
-const {request} = require("express");
 
 async function PostUser(router) {
     router.post("/:userId/user", async (context, next) => {
